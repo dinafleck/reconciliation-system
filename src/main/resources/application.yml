@@ -1,0 +1,9 @@
+server:
+  port: 8081
+
+app:
+  datasource:
+    url: jdbc:h2:mem:reconciliation-system;DB_CLOSE_DELAY=-1;TRACE_LEVEL_SYSTEM_OUT=2
+    username: reconciliation-system
+    password:
+    driver-class: org.h2.Driver
