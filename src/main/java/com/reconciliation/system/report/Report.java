@@ -1,6 +1,7 @@
 package com.reconciliation.system.report;
 
 import com.reconciliation.system.banktransaction.BankTransaction;
+import com.reconciliation.system.reconciliation.Reconciliation;
 import com.reconciliation.system.saletransaction.SaleTransaction;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class Report {
     private final LocalDateTime reportReceivedAt = LocalDateTime.now();
     private final List<SaleTransaction> saleTransactions = new ArrayList<SaleTransaction>();
     private final List<BankTransaction> bankTransactions = new ArrayList<>();
+    private final List<Reconciliation> reconciliations = new ArrayList<>();
 
     public List<SaleTransaction> getSaleTransactions() {
         return saleTransactions;
@@ -28,6 +30,10 @@ public class Report {
 
     public void addBankTransaction(BankTransaction bankTransaction) {
         bankTransactions.add(bankTransaction);
+    }
+
+    public void addReconciliation(Reconciliation reconciliation) {
+        reconciliations.add(reconciliation);
     }
 
     public LocalDateTime getReportReceivedAt() {

@@ -10,6 +10,8 @@ public class SaleTransaction {
     private final LocalDateTime date;
     private final String paymentMethod;
     private final Integer installments;
+    private final String status;
+    private final String bankTransactionId;
 
     public SaleTransaction(
             String saleId,
@@ -25,6 +27,28 @@ public class SaleTransaction {
         this.date = date;
         this.paymentMethod = paymentMethod;
         this.installments = installments;
+        this.status = "PENDING";
+        this.bankTransactionId = null;
+    }
+
+    public SaleTransaction(
+            String saleId,
+            BigDecimal grossAmount,
+            String currency,
+            LocalDateTime date,
+            String paymentMethod,
+            Integer installments,
+            String status,
+            String bankTransactionId
+    ) {
+        this.saleId = saleId;
+        this.grossAmount = grossAmount;
+        this.currency = currency;
+        this.date = date;
+        this.paymentMethod = paymentMethod;
+        this.installments = installments;
+        this.status = status;
+        this.bankTransactionId = bankTransactionId;
     }
 
 
@@ -50,6 +74,14 @@ public class SaleTransaction {
 
     public Integer getInstallments() {
         return installments;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getBankTransactionId() {
+        return bankTransactionId;
     }
 
 

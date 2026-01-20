@@ -2,8 +2,6 @@ package com.reconciliation.system.report.repository;
 
 import com.reconciliation.system.report.Report;
 import com.reconciliation.system.report.ReportRepository;
-import com.reconciliation.system.saletransaction.SaleTransaction;
-import com.reconciliation.system.saletransaction.SaleTransactionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

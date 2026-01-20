@@ -28,8 +28,9 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
                                           currency,
                                           date,
                                           PaymentMethod,
-                                          installments
-                                          ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                          installments,
+                                          status
+                                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -40,6 +41,7 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
         preparedStatement.setObject(5, saleTransaction.getDate());
         preparedStatement.setObject(6, saleTransaction.getPaymentMethod());
         preparedStatement.setObject(7, saleTransaction.getInstallments());
+        preparedStatement.setObject(8, saleTransaction.getStatus());
 
         preparedStatement.executeUpdate();
     }

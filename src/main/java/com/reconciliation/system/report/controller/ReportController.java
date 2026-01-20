@@ -32,7 +32,7 @@ public class ReportController {
 
     @PostMapping("/bank-transactions")
     public ResponseEntity<String> bank(@RequestParam("file") MultipartFile file) throws Exception {
-        if (file.isEmpty()){
+        if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Please select a file to upload");
         }
         reportService.saveBankTransactions(file);

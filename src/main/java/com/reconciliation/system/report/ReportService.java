@@ -6,4 +6,5 @@ public interface ReportService {
     void saveSaleTransactions(MultipartFile fileParts) throws Exception;
 
     void saveBankTransactions(MultipartFile fileParts) throws Exception;
+
 }

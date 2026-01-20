@@ -21,7 +21,7 @@ public class BankTransactionPostgresqlRepository implements BankTransactionRepos
     public void save(BankTransaction bankTransaction) throws SQLException {
         String query = """
                 INSERT INTO bank_transactions (
-                                               bank_tx_id,
+                                               bankTransactionId,
                                                post_date,
                                                amount,
                                                currency,
@@ -31,8 +31,8 @@ public class BankTransactionPostgresqlRepository implements BankTransactionRepos
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setObject(1, bankTransaction.getBank_tx_id());
-        preparedStatement.setObject(2, bankTransaction.getPost_date());
+        preparedStatement.setObject(1, bankTransaction.getTransactionId());
+        preparedStatement.setObject(2, bankTransaction.getPostDate());
         preparedStatement.setObject(3, bankTransaction.getAmount());
         preparedStatement.setObject(4, bankTransaction.getCurrency());
         preparedStatement.setObject(5, bankTransaction.getDescription());

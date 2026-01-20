@@ -2,6 +2,8 @@ package com.reconciliation.system.report.service;
 
 import com.reconciliation.system.banktransaction.BankTransaction;
 import com.reconciliation.system.banktransaction.BankTransactionRepository;
+import com.reconciliation.system.reconciliation.ReconciliationRepository;
+import com.reconciliation.system.reconciliation.ReconciliationService;
 import com.reconciliation.system.report.Report;
 import com.reconciliation.system.report.ReportRepository;
 import com.reconciliation.system.report.ReportService;
@@ -25,15 +27,18 @@ public class ReportBusiness implements ReportService {
     private final ReportRepository reportRepository;
     private final SaleTransactionRepository saleTransactionRepository;
     private final BankTransactionRepository bankTransactionRepository;
+    private final ReconciliationService reconciliationService;
 
     public ReportBusiness(
             ReportRepository reportRepository,
             SaleTransactionRepository saleTransactionRepository,
-            BankTransactionRepository bankTransactionRepository
+            BankTransactionRepository bankTransactionRepository,
+            ReconciliationService reconciliationService
     ) {
         this.reportRepository = reportRepository;
         this.saleTransactionRepository = saleTransactionRepository;
         this.bankTransactionRepository = bankTransactionRepository;
+        this.reconciliationService = reconciliationService;
     }
 
     @Override
@@ -123,6 +128,7 @@ public class ReportBusiness implements ReportService {
 
             for (BankTransaction bankTransaction : report.getBankTransactions()) {
                 bankTransactionRepository.save(bankTransaction);
+                reconciliationService.reconcile(bankTransaction);
             }
 
 
