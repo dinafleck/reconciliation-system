@@ -26,8 +26,9 @@ public class BankTransactionPostgresqlRepository implements BankTransactionRepos
                                                amount,
                                                currency,
                                                description,
-                                               direction
-                                                ) VALUES (?, ?, ?, ?, ?, ?)
+                                               direction,
+                                               status
+                                                ) VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -37,6 +38,7 @@ public class BankTransactionPostgresqlRepository implements BankTransactionRepos
         preparedStatement.setObject(4, bankTransaction.getCurrency());
         preparedStatement.setObject(5, bankTransaction.getDescription());
         preparedStatement.setObject(6, bankTransaction.getDirection());
+        preparedStatement.setObject(7, bankTransaction.getStatus());
 
         preparedStatement.executeUpdate();
 

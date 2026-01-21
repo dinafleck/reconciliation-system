@@ -52,5 +52,9 @@ public class BankTransaction {
     public String getDirection() {
         return direction;
     }
+
+    public String getStatus() {
+        return status;
+    }
 }
 

@@ -45,7 +45,8 @@ public class PostgresqlConfiguration {
                         amount DECIMAL(10,2) NOT NULL,
                         currency VARCHAR(255) NOT NULL,
                         description VARCHAR(255) NOT NULL,
-                        direction VARCHAR(255) NOT NULL
+                        direction VARCHAR(255) NOT NULL,
+                        status VARCHAR(255) NOT NULL
                     )
                     """;
             connection.createStatement().executeUpdate(createBankTransactionQuery);
@@ -69,7 +70,7 @@ public class PostgresqlConfiguration {
             String createReconciliationQuery = """
                     CREATE TABLE reconciliations (
                     matchID UUID PRIMARY KEY NOT NULL,
-                    receiptDate TIMESTAMP NOT NULL
+                    reconciliationDate TIMESTAMP NOT NULL
                     )
                     """;
             connection.createStatement().executeUpdate(createReconciliationQuery);
