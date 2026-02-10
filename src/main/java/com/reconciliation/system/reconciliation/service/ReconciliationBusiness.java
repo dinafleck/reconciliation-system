@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReconciliationBusiness implements ReconciliationService {
@@ -25,32 +29,50 @@ public class ReconciliationBusiness implements ReconciliationService {
     }
 
     @Override
-    public void reconcile() throws SQLException {
+    public List<Reconciliation> reconcile() throws Exception {
         List<BankTransaction> bankTransactions = reconciliationRepository.getPendingBankTransactions();
         List<SaleTransaction> saleTransactions = reconciliationRepository.getPendingSales();
 
-        Reconciliation reconciliation = new Reconciliation();
+        List<Reconciliation> reconciliations = new ArrayList<>();
+        Map<LocalDate, Boolean> fetchAllDates = new HashMap<>();
 
         for (BankTransaction bankTransaction : bankTransactions) {
-            String bankDirection = bankTransaction.getDirection();
-            String bankDescription = bankTransaction.getDescription();
-
-            if (bankDirection.equals("DEBIT") || saleTransactions.isEmpty()) {
-                return;
-            }
-
-            if (bankDescription.contains("PIX")) {
-
-                for (SaleTransaction saleTransaction : saleTransactions) {
-                    if (saleTransaction.getGrossAmount().compareTo(bankTransaction.getAmount()) == 0) {
-                        reconciliation.addSaleTransaction(saleTransaction);
-                        reconciliation.addBankTransaction(bankTransaction);
-                        reconciliationRepository.updateReconciliationStatus(saleTransaction.getSaleId(), bankTransaction.getTransactionId());
-                    }
-                }
-
-            }
+            System.out.println("Bank transaction " + bankTransaction.toString());
+            fetchAllDates.putIfAbsent(bankTransaction.getPostDate().toLocalDate(), true);
         }
-        reconciliationRepository.save(reconciliation);
+
+        for (SaleTransaction saleTransaction : saleTransactions) {
+            System.out.println("Sale transaction " + saleTransaction.toString());
+            fetchAllDates.putIfAbsent(saleTransaction.getDate().toLocalDate(), true);
+        }
+
+        for (LocalDate date : fetchAllDates.keySet()) {
+            System.out.println("Date " + date);
+            Reconciliation reconciliation = new Reconciliation();
+
+            List<BankTransaction> bankTransactionsForDate = bankTransactions
+                    .stream()
+                    .filter(it -> it.getPostDate().toLocalDate().equals(date))
+                    .toList();
+
+            reconciliation.addAllBankTransaction(bankTransactionsForDate);
+
+            System.out.println("Bank transactions " + bankTransactionsForDate.size());
+
+            List<SaleTransaction> saleTransactionsForDate = saleTransactions
+                    .stream()
+                    .filter(it -> it.getDate().toLocalDate().equals(date))
+                    .toList();
+
+            reconciliation.addAllSaleTransaction(saleTransactionsForDate);
+
+            System.out.println("Sale transactions " + saleTransactionsForDate.size());
+
+            reconciliations.add(reconciliation);
+
+            reconciliation.save(reconciliationRepository);
+        }
+
+        return reconciliations;
     }
 }

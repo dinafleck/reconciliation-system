@@ -11,5 +11,5 @@ public interface ReconciliationService {
 
     List<SaleTransaction> reportReconciliation(LocalDate date) throws SQLException;
 
-    void reconcile() throws SQLException;
+    List<Reconciliation> reconcile() throws Exception;
 }

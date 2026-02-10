@@ -1,6 +1,7 @@
 package com.reconciliation.system.reconciliation.controller;
 
 
+import com.reconciliation.system.reconciliation.Reconciliation;
 import com.reconciliation.system.reconciliation.ReconciliationService;
 import com.reconciliation.system.saletransaction.SaleTransaction;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,14 +33,14 @@ public class ReconciliationController {
     }
 
     @Scheduled(cron = "0 0 23 * * *")
-    public void reconciliation() throws SQLException {
+    public void reconciliation() throws Exception {
         reconciliationService.reconcile();
     }
 
     @GetMapping("/reconcile-now")
-    public ResponseEntity<String> reconcileNow() throws SQLException {
-        reconciliationService.reconcile();
-        return ResponseEntity.ok().body("Successfully reconciled");
+    public ResponseEntity<List<Reconciliation>> reconcileNow() throws Exception {
+
+        return ResponseEntity.ok().body(reconciliationService.reconcile());
     }
 
 
