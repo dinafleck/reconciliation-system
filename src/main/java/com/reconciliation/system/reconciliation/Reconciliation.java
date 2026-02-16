@@ -30,7 +30,7 @@ public class Reconciliation {
         System.out.println("Calculating total amount for " + reconciliationDate);
         for (SaleTransaction saleTransaction : saleTransactions) {
             System.out.println(saleTransaction.toString());
-            totalSaleTransactionAmount = totalSaleTransactionAmount.add(saleTransaction.getGrossAmount());
+            totalSaleTransactionAmount = totalSaleTransactionAmount.add(saleTransaction.getNetAmount());
         }
 
         for (BankTransaction bankTransaction : bankTransactions) {

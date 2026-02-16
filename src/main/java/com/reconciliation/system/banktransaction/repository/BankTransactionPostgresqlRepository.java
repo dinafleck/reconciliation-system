@@ -24,21 +24,19 @@ public class BankTransactionPostgresqlRepository implements BankTransactionRepos
                                                bankTransactionId,
                                                post_date,
                                                amount,
-                                               currency,
                                                description,
                                                direction,
                                                status
-                                                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                                ) VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setObject(1, bankTransaction.getTransactionId());
         preparedStatement.setObject(2, bankTransaction.getPostDate());
         preparedStatement.setObject(3, bankTransaction.getAmount());
-        preparedStatement.setObject(4, bankTransaction.getCurrency());
-        preparedStatement.setObject(5, bankTransaction.getDescription());
-        preparedStatement.setObject(6, bankTransaction.getDirection());
-        preparedStatement.setObject(7, bankTransaction.getStatus());
+        preparedStatement.setObject(4, bankTransaction.getDescription());
+        preparedStatement.setObject(5, bankTransaction.getDirection());
+        preparedStatement.setObject(6, bankTransaction.getStatus());
 
         preparedStatement.executeUpdate();
 

@@ -43,29 +43,12 @@ public class PostgresqlConfiguration {
                         bankTransactionId VARCHAR(255) PRIMARY KEY NOT NULL,
                         post_date TIMESTAMP NOT NULL,
                         amount DECIMAL(10,2) NOT NULL,
-                        currency VARCHAR(255) NOT NULL,
                         description VARCHAR(255) NOT NULL,
                         direction VARCHAR(255) NOT NULL,
                         status VARCHAR(255) NOT NULL
                     )
                     """;
             connection.createStatement().executeUpdate(createBankTransactionQuery);
-
-            String createTransactionQuery = """
-                    CREATE TABLE sale_transactions (
-                        id UUID PRIMARY KEY NOT NULL,
-                        saleId VARCHAR(255) NOT NULL,
-                        grossAmount DECIMAL(10,2) NOT NULL,
-                        currency VARCHAR(255) NOT NULL,
-                        date TIMESTAMP NOT NULL,
-                        paymentMethod VARCHAR(255) NOT NULL,
-                        installments INTEGER NOT NULL,
-                        status VARCHAR(255) NOT NULL,
-                        bankTransactionId VARCHAR(255),
-                        FOREIGN KEY (bankTransactionId) REFERENCES bank_transactions(bankTransactionId)
-                    )
-                    """;
-            connection.createStatement().executeUpdate(createTransactionQuery);
 
             String createReconciliationQuery = """
                     CREATE TABLE reconciliations (
@@ -74,6 +57,23 @@ public class PostgresqlConfiguration {
                     )
                     """;
             connection.createStatement().executeUpdate(createReconciliationQuery);
+
+            String createTransactionQuery = """
+                    CREATE TABLE sale_transactions (
+                        id UUID PRIMARY KEY NOT NULL,
+                        saleId VARCHAR(255) NOT NULL,
+                        grossAmount DECIMAL(10,2) NOT NULL,
+                        date TIMESTAMP NOT NULL,
+                        paymentMethod VARCHAR(255) NOT NULL,
+                        installments INTEGER NOT NULL,
+                        status VARCHAR(255) NOT NULL,
+                        matchID UUID,
+                        netAmount DECIMAL(10,2) NOT NULL,
+                        receivedAt TIMESTAMP NOT NULL,
+                        FOREIGN KEY (matchID) REFERENCES reconciliations(matchID)
+                    )
+                    """;
+            connection.createStatement().executeUpdate(createTransactionQuery);
         }
 
         return connection;

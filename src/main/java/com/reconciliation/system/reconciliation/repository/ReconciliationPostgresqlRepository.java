@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class ReconciliationPostgresqlRepository implements ReconciliationRepository {
@@ -58,23 +59,24 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             while (resultSet.next()) {
                 String saleId = resultSet.getString("saleId");
                 BigDecimal grossAmount = resultSet.getBigDecimal("grossAmount");
-                String currency = resultSet.getString("currency");
                 LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
                 String paymentMethod = resultSet.getString("paymentMethod");
                 Integer installments = resultSet.getInt("installments");
                 String status = resultSet.getString("status");
-                String bankTransactionId = resultSet.getString("bankTransactionId");
-
+                String matchID = resultSet.getString("matchID");
+                BigDecimal netAmount = resultSet.getBigDecimal("netAmount");
+                LocalDateTime receivedAt = resultSet.getTimestamp("receivedAt").toLocalDateTime();
 
                 SaleTransaction saleTransaction = new SaleTransaction(
                         saleId,
                         grossAmount,
-                        currency,
                         date,
                         paymentMethod,
                         installments,
                         status,
-                        bankTransactionId
+                        matchID,
+                        netAmount,
+                        receivedAt
                 );
                 saleTransactions.add(saleTransaction);
             }
@@ -102,7 +104,6 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
                 String transactionId = resultSet.getString("bankTransactionId");
                 LocalDateTime postDate = resultSet.getTimestamp("post_date").toLocalDateTime();
                 BigDecimal amount = resultSet.getBigDecimal("amount");
-                String currency = resultSet.getString("currency");
                 String description = resultSet.getString("description");
                 String direction = resultSet.getString("direction");
 
@@ -110,7 +111,6 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
                         transactionId,
                         postDate,
                         amount,
-                        currency,
                         description,
                         direction
                 );
@@ -121,22 +121,35 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
     }
 
     @Override
-    public void updateReconciliationStatus(String saleId, String bankId) throws SQLException {
+    public void updateReconciliationStatus(List<SaleTransaction> saleTransactions, List<BankTransaction> bankTransactions, UUID matchID) throws SQLException {
+        for (SaleTransaction saleTransaction : saleTransactions) {
+            String saleId = saleTransaction.getSaleId();
 
-        String updateQuery = """
+            String updateQuery = """
                                 UPDATE sale_transactions
-                                SET status = 'RECONCILED' 
-                                SET bankTransactionId = ? 
+                                SET status = 'RECONCILED',
+                                    matchID = ?
                                 WHERE saleId = ?
                                 """;
 
-        PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-        updateStatement.setObject(1, bankId);
-        updateStatement.setObject(2, saleId);
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+            updateStatement.setObject(1, matchID);
+            updateStatement.setObject(1, saleId);
+        }
 
+        for (BankTransaction bankTransaction : bankTransactions) {
+            String transactionId = bankTransaction.getTransactionId();
 
+            String updateQuery = """
+                                UPDATE bank_transactions
+                                SET status = 'RECONCILED' 
+                                WHERE bankTransactionId = ?
+                                """;
 
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+            updateStatement.setObject(1, transactionId);
 
+        }
     }
 
     @Override
@@ -165,23 +178,25 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
         while (resultSet.next()) {
             String saleId = resultSet.getString("saleId");
             BigDecimal grossAmount = resultSet.getBigDecimal("grossAmount");
-            String currency = resultSet.getString("currency");
             LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
             String paymentMethod = resultSet.getString("paymentMethod");
             Integer installments = resultSet.getInt("installments");
             String status = resultSet.getString("status");
             String bankTransactionId = resultSet.getString("bankTransactionId");
+            BigDecimal netAmount = resultSet.getBigDecimal("netAmount");
+            LocalDateTime receivedAt = resultSet.getTimestamp("receivedAt").toLocalDateTime();
 
 
             SaleTransaction saleTransaction = new SaleTransaction(
                     saleId,
                     grossAmount,
-                    currency,
                     date,
                     paymentMethod,
                     installments,
                     status,
-                    bankTransactionId
+                    bankTransactionId,
+                    netAmount,
+                    receivedAt
             );
             saleTransactions.add(saleTransaction);
         }

@@ -6,49 +6,54 @@ import java.time.LocalDateTime;
 public class SaleTransaction {
     private final String saleId;
     private final BigDecimal grossAmount;
-    private final String currency;
-    private final LocalDateTime date;
+    private final LocalDateTime orderDate;
     private final String paymentMethod;
     private final Integer installments;
     private final String status;
-    private final String bankTransactionId;
+    private final String matchID;
+    private final BigDecimal netAmount;
+    private LocalDateTime receivedAt;
 
     public SaleTransaction(
             String saleId,
             BigDecimal grossAmount,
-            String currency,
-            LocalDateTime date,
+            LocalDateTime orderDate,
             String paymentMethod,
-            Integer installments
+            Integer installments,
+            BigDecimal netAmount,
+            LocalDateTime receivedAt
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
-        this.currency = currency;
-        this.date = date;
+        this.orderDate = orderDate;
         this.paymentMethod = paymentMethod;
         this.installments = installments;
         this.status = "PENDING";
-        this.bankTransactionId = null;
+        this.matchID = null;
+        this.netAmount = netAmount;
+        this.receivedAt = receivedAt;
     }
 
     public SaleTransaction(
             String saleId,
             BigDecimal grossAmount,
-            String currency,
-            LocalDateTime date,
+            LocalDateTime orderDate,
             String paymentMethod,
             Integer installments,
             String status,
-            String bankTransactionId
+            String matchID,
+            BigDecimal netAmount,
+            LocalDateTime receivedAt
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
-        this.currency = currency;
-        this.date = date;
+        this.orderDate = orderDate;
         this.paymentMethod = paymentMethod;
         this.installments = installments;
         this.status = status;
-        this.bankTransactionId = bankTransactionId;
+        this.matchID = matchID;
+        this.netAmount = netAmount;
+        this.receivedAt = receivedAt;
     }
 
 
@@ -60,12 +65,8 @@ public class SaleTransaction {
         return grossAmount;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getOrderDate() {
+        return orderDate;
     }
 
     public String getPaymentMethod() {
@@ -80,8 +81,20 @@ public class SaleTransaction {
         return status;
     }
 
-    public String getBankTransactionId() {
-        return bankTransactionId;
+    public String getMatchID() {
+        return matchID;
+    }
+
+    public BigDecimal getNetAmount() {
+        return netAmount;
+    }
+
+    public LocalDateTime getReceivedAt() {
+        return receivedAt;
+    }
+
+    public void setReceivedAt(LocalDateTime date){
+        this.receivedAt = date;
     }
 
 

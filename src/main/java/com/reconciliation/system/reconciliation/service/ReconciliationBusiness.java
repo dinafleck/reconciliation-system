@@ -9,11 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class ReconciliationBusiness implements ReconciliationService {
@@ -34,20 +30,17 @@ public class ReconciliationBusiness implements ReconciliationService {
         List<SaleTransaction> saleTransactions = reconciliationRepository.getPendingSales();
 
         List<Reconciliation> reconciliations = new ArrayList<>();
-        Map<LocalDate, Boolean> fetchAllDates = new HashMap<>();
+        Map<LocalDate, Boolean> fetchAllDates = new TreeMap<>();
 
         for (BankTransaction bankTransaction : bankTransactions) {
-            System.out.println("Bank transaction " + bankTransaction.toString());
             fetchAllDates.putIfAbsent(bankTransaction.getPostDate().toLocalDate(), true);
         }
 
         for (SaleTransaction saleTransaction : saleTransactions) {
-            System.out.println("Sale transaction " + saleTransaction.toString());
-            fetchAllDates.putIfAbsent(saleTransaction.getDate().toLocalDate(), true);
+            fetchAllDates.putIfAbsent(saleTransaction.getReceivedAt().toLocalDate(), true);
         }
 
         for (LocalDate date : fetchAllDates.keySet()) {
-            System.out.println("Date " + date);
             Reconciliation reconciliation = new Reconciliation();
 
             List<BankTransaction> bankTransactionsForDate = bankTransactions
@@ -55,21 +48,28 @@ public class ReconciliationBusiness implements ReconciliationService {
                     .filter(it -> it.getPostDate().toLocalDate().equals(date))
                     .toList();
 
-            reconciliation.addAllBankTransaction(bankTransactionsForDate);
+            if (bankTransactionsForDate.isEmpty()) {
+                saleTransactions
+                        .stream()
+                        .filter(it -> it.getReceivedAt().toLocalDate().equals(date))
+                        .forEach(saleTransaction ->
+                            saleTransaction.setReceivedAt(date.plusDays(1).atStartOfDay())
+                        );
+                continue;
+            }
 
-            System.out.println("Bank transactions " + bankTransactionsForDate.size());
+            reconciliation.addAllBankTransaction(bankTransactionsForDate);
 
             List<SaleTransaction> saleTransactionsForDate = saleTransactions
                     .stream()
-                    .filter(it -> it.getDate().toLocalDate().equals(date))
+                    .filter(it -> it.getReceivedAt().toLocalDate().equals(date))
                     .toList();
 
             reconciliation.addAllSaleTransaction(saleTransactionsForDate);
 
-            System.out.println("Sale transactions " + saleTransactionsForDate.size());
+            reconciliationRepository.updateReconciliationStatus(saleTransactionsForDate, bankTransactionsForDate, reconciliation.getMatchID());
 
             reconciliations.add(reconciliation);
-
             reconciliation.save(reconciliationRepository);
         }
 
