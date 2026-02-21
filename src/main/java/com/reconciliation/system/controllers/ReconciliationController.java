@@ -1,17 +1,19 @@
-package com.reconciliation.system.reconciliation.controller;
+package com.reconciliation.system.controllers;
 
 
-import com.reconciliation.system.reconciliation.Reconciliation;
-import com.reconciliation.system.reconciliation.ReconciliationService;
-import com.reconciliation.system.saletransaction.SaleTransaction;
+import com.reconciliation.system.domains.ReconciliationService;
+import com.reconciliation.system.domains.models.Reconciliation;
+import com.reconciliation.system.domains.models.SaleTransaction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class ReconciliationController {
     }
 
     @GetMapping("/date")
-    public ResponseEntity<List<SaleTransaction>> reconciliationReport(@RequestParam("date") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate date) throws SQLException {
+    public ResponseEntity<List<SaleTransaction>> reconciliationReport(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) throws SQLException {
 
         List<SaleTransaction> reconciledSales = reconciliationService.reportReconciliation(date);
         return ResponseEntity.ok().body(reconciledSales);
@@ -42,7 +44,6 @@ public class ReconciliationController {
 
         return ResponseEntity.ok().body(reconciliationService.reconcile());
     }
-
 
 
 }

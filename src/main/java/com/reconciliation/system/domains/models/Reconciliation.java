@@ -1,10 +1,8 @@
-package com.reconciliation.system.reconciliation;
+package com.reconciliation.system.domains.models;
 
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.saletransaction.SaleTransaction;
+import com.reconciliation.system.domains.ReconciliationRepository;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

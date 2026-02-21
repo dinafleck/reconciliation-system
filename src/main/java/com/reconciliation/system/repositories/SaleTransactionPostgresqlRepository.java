@@ -1,7 +1,7 @@
-package com.reconciliation.system.saletransaction.repository;
+package com.reconciliation.system.repositories;
 
-import com.reconciliation.system.saletransaction.SaleTransaction;
-import com.reconciliation.system.saletransaction.SaleTransactionRepository;
+import com.reconciliation.system.domains.SaleTransactionRepository;
+import com.reconciliation.system.domains.models.SaleTransaction;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

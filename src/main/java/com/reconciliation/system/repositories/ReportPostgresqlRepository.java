@@ -1,7 +1,7 @@
-package com.reconciliation.system.report.repository;
+package com.reconciliation.system.repositories;
 
-import com.reconciliation.system.report.Report;
-import com.reconciliation.system.report.ReportRepository;
+import com.reconciliation.system.domains.ReportRepository;
+import com.reconciliation.system.domains.models.Report;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

@@ -1,8 +1,4 @@
-package com.reconciliation.system.report;
-
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.reconciliation.Reconciliation;
-import com.reconciliation.system.saletransaction.SaleTransaction;
+package com.reconciliation.system.domains.models;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.reconciliation.system.saletransaction;
+package com.reconciliation.system.domains.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -93,7 +93,7 @@ public class SaleTransaction {
         return receivedAt;
     }
 
-    public void setReceivedAt(LocalDateTime date){
+    public void setReceivedAt(LocalDateTime date) {
         this.receivedAt = date;
     }
 

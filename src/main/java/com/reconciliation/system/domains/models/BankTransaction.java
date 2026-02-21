@@ -1,4 +1,4 @@
-package com.reconciliation.system.banktransaction;
+package com.reconciliation.system.domains.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

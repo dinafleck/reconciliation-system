@@ -1,6 +1,6 @@
-package com.reconciliation.system.report.controller;
+package com.reconciliation.system.controllers;
 
-import com.reconciliation.system.report.ReportService;
+import com.reconciliation.system.domains.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

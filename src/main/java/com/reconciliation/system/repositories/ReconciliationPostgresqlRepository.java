@@ -1,9 +1,9 @@
-package com.reconciliation.system.reconciliation.repository;
+package com.reconciliation.system.repositories;
 
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.reconciliation.Reconciliation;
-import com.reconciliation.system.reconciliation.ReconciliationRepository;
-import com.reconciliation.system.saletransaction.SaleTransaction;
+import com.reconciliation.system.domains.ReconciliationRepository;
+import com.reconciliation.system.domains.models.BankTransaction;
+import com.reconciliation.system.domains.models.Reconciliation;
+import com.reconciliation.system.domains.models.SaleTransaction;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -126,11 +126,11 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             String saleId = saleTransaction.getSaleId();
 
             String updateQuery = """
-                                UPDATE sale_transactions
-                                SET status = 'RECONCILED',
-                                    matchID = ?
-                                WHERE saleId = ?
-                                """;
+                    UPDATE sale_transactions
+                    SET status = 'RECONCILED',
+                        matchID = ?
+                    WHERE saleId = ?
+                    """;
 
             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
             updateStatement.setObject(1, matchID);
@@ -141,10 +141,10 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             String transactionId = bankTransaction.getTransactionId();
 
             String updateQuery = """
-                                UPDATE bank_transactions
-                                SET status = 'RECONCILED' 
-                                WHERE bankTransactionId = ?
-                                """;
+                    UPDATE bank_transactions
+                    SET status = 'RECONCILED' 
+                    WHERE bankTransactionId = ?
+                    """;
 
             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
             updateStatement.setObject(1, transactionId);

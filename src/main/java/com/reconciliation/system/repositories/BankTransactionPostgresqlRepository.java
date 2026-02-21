@@ -1,7 +1,7 @@
-package com.reconciliation.system.banktransaction.repository;
+package com.reconciliation.system.repositories;
 
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.banktransaction.BankTransactionRepository;
+import com.reconciliation.system.domains.BankTransactionRepository;
+import com.reconciliation.system.domains.models.BankTransaction;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;

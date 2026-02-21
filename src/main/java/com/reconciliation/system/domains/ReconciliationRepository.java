@@ -1,7 +1,8 @@
-package com.reconciliation.system.reconciliation;
+package com.reconciliation.system.domains;
 
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.saletransaction.SaleTransaction;
+import com.reconciliation.system.domains.models.BankTransaction;
+import com.reconciliation.system.domains.models.Reconciliation;
+import com.reconciliation.system.domains.models.SaleTransaction;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

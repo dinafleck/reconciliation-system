@@ -1,4 +1,6 @@
-package com.reconciliation.system.banktransaction;
+package com.reconciliation.system.domains;
+
+import com.reconciliation.system.domains.models.BankTransaction;
 
 import java.sql.SQLException;
 

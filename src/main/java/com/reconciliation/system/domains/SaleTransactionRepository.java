@@ -1,4 +1,6 @@
-package com.reconciliation.system.saletransaction;
+package com.reconciliation.system.domains;
+
+import com.reconciliation.system.domains.models.SaleTransaction;
 
 import java.sql.SQLException;
 

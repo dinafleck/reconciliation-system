@@ -1,12 +1,12 @@
-package com.reconciliation.system.report.service;
+package com.reconciliation.system.services;
 
-import com.reconciliation.system.banktransaction.BankTransaction;
-import com.reconciliation.system.banktransaction.BankTransactionRepository;
-import com.reconciliation.system.report.Report;
-import com.reconciliation.system.report.ReportRepository;
-import com.reconciliation.system.report.ReportService;
-import com.reconciliation.system.saletransaction.SaleTransaction;
-import com.reconciliation.system.saletransaction.SaleTransactionRepository;
+import com.reconciliation.system.domains.BankTransactionRepository;
+import com.reconciliation.system.domains.ReportRepository;
+import com.reconciliation.system.domains.ReportService;
+import com.reconciliation.system.domains.SaleTransactionRepository;
+import com.reconciliation.system.domains.models.BankTransaction;
+import com.reconciliation.system.domains.models.Report;
+import com.reconciliation.system.domains.models.SaleTransaction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ReportBusiness implements ReportService {
+public class ReportBusinessService implements ReportService {
     private final String SEPARATOR = ";";
     private final ReportRepository reportRepository;
     private final SaleTransactionRepository saleTransactionRepository;
     private final BankTransactionRepository bankTransactionRepository;
 
-    public ReportBusiness(
+    public ReportBusinessService(
             ReportRepository reportRepository,
             SaleTransactionRepository saleTransactionRepository,
             BankTransactionRepository bankTransactionRepository
@@ -154,36 +154,24 @@ public class ReportBusiness implements ReportService {
             if (cleanValue.matches("\\d{1,3}(?:\\.\\d{3})*,\\d{2}")) {
                 cleanValue = cleanValue.replaceAll("\\.", "").replace(",", ".");
                 return new BigDecimal(cleanValue);
-            }
-
-            else if (cleanValue.matches("\\d{1,3}(?:,\\d{3})*\\.\\d{2}")) {
+            } else if (cleanValue.matches("\\d{1,3}(?:,\\d{3})*\\.\\d{2}")) {
                 // Formato: 1,234,567.89 (americano)
                 // Remove vírgulas de milhar
                 cleanValue = cleanValue.replaceAll(",", "");
                 return new BigDecimal(cleanValue);
-            }
-
-            else if (cleanValue.matches("\\d+,\\d{1,2}")) {
+            } else if (cleanValue.matches("\\d+,\\d{1,2}")) {
                 // Formato: 1234,56
                 cleanValue = cleanValue.replace(",", ".");
                 return new BigDecimal(cleanValue);
-            }
-
-            else if (cleanValue.matches("\\d+\\.\\d{1,2}")) {
+            } else if (cleanValue.matches("\\d+\\.\\d{1,2}")) {
                 // Formato: 1234.56
                 return new BigDecimal(cleanValue);
-            }
-
-            else if (cleanValue.matches("\\d+")) {
+            } else if (cleanValue.matches("\\d+")) {
                 return new BigDecimal(cleanValue);
-            }
-
-            else if (cleanValue.matches("\\d+[,.]")) {
+            } else if (cleanValue.matches("\\d+[,.]")) {
                 cleanValue = cleanValue.replaceAll("[,.]$", "");
                 return new BigDecimal(cleanValue);
-            }
-
-            else {
+            } else {
 
                 cleanValue = cleanValue.replaceAll("[^\\d,.]", "");
 
@@ -196,9 +184,7 @@ public class ReportBusiness implements ReportService {
                     } else {
                         cleanValue = cleanValue.replaceAll(",", "");
                     }
-                }
-
-                else if (cleanValue.contains(",") && !cleanValue.contains(".")) {
+                } else if (cleanValue.contains(",") && !cleanValue.contains(".")) {
                     cleanValue = cleanValue.replace(",", ".");
                 }
 

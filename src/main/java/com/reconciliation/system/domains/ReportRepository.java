@@ -1,4 +1,6 @@
-package com.reconciliation.system.report;
+package com.reconciliation.system.domains;
+
+import com.reconciliation.system.domains.models.Report;
 
 import java.sql.SQLException;
 
