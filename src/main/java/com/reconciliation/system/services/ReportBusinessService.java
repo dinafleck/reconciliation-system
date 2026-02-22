@@ -70,7 +70,8 @@ public class ReportBusinessService implements ReportService {
                         lineParts[14].trim(),
                         Integer.parseInt(lineParts[23].trim()),
                         parseDecimal(lineParts[39]),
-                        LocalDateTime.parse(lineParts[27].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                        LocalDateTime.parse(lineParts[27].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        lineParts[3].trim()
                 );
 
                 report.addSalesTransaction(saleTransaction);

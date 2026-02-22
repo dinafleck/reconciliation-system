@@ -13,6 +13,7 @@ public class SaleTransaction {
     private final String matchID;
     private final BigDecimal netAmount;
     private LocalDateTime receivedAt;
+    private final String clientName;
 
     public SaleTransaction(
             String saleId,
@@ -21,7 +22,8 @@ public class SaleTransaction {
             String paymentMethod,
             Integer installments,
             BigDecimal netAmount,
-            LocalDateTime receivedAt
+            LocalDateTime receivedAt,
+            String clientName
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
@@ -32,6 +34,7 @@ public class SaleTransaction {
         this.matchID = null;
         this.netAmount = netAmount;
         this.receivedAt = receivedAt;
+        this.clientName = clientName;
     }
 
     public SaleTransaction(
@@ -43,7 +46,8 @@ public class SaleTransaction {
             String status,
             String matchID,
             BigDecimal netAmount,
-            LocalDateTime receivedAt
+            LocalDateTime receivedAt,
+            String clientName
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
@@ -54,6 +58,7 @@ public class SaleTransaction {
         this.matchID = matchID;
         this.netAmount = netAmount;
         this.receivedAt = receivedAt;
+        this.clientName = clientName;
     }
 
 
@@ -95,6 +100,10 @@ public class SaleTransaction {
 
     public void setReceivedAt(LocalDateTime date) {
         this.receivedAt = date;
+    }
+
+    public String getClientName() {
+        return clientName;
     }
 
 

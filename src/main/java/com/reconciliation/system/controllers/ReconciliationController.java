@@ -6,8 +6,6 @@ import com.reconciliation.system.domains.models.Reconciliation;
 import com.reconciliation.system.domains.models.SaleTransaction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@EnableScheduling
 @RequestMapping("/reconciliation")
 public class ReconciliationController {
     private final ReconciliationService reconciliationService;
@@ -34,16 +31,9 @@ public class ReconciliationController {
         return ResponseEntity.ok().body(reconciledSales);
     }
 
-    @Scheduled(cron = "0 0 23 * * *")
-    public void reconciliation() throws Exception {
-        reconciliationService.reconcile();
-    }
-
     @GetMapping("/reconcile-now")
     public ResponseEntity<List<Reconciliation>> reconcileNow() throws Exception {
 
         return ResponseEntity.ok().body(reconciliationService.reconcile());
     }
-
-
 }

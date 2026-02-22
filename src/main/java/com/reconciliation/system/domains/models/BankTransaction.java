@@ -10,6 +10,7 @@ public class BankTransaction {
     private final String description;
     private final String direction;
     private final String status;
+    private final String matchID;
 
     public BankTransaction(
             String transactionId,
@@ -24,6 +25,7 @@ public class BankTransaction {
         this.description = description;
         this.direction = direction;
         this.status = "PENDING";
+        this.matchID = null;
     }
 
     public String getTransactionId() {
@@ -49,5 +51,10 @@ public class BankTransaction {
     public String getStatus() {
         return status;
     }
+
+    public String getMatchID() {
+        return matchID;
+    }
+
 }
 

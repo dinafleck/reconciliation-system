@@ -30,13 +30,21 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
         String query = """
                 INSERT INTO reconciliations (
                                             matchID,
-                                            reconciliationDate
-                                            ) VALUES (?, ?)
+                                            reconciliationDate,
+                                            bankTransactionDate,
+                                            totalSaleTransactionAmount,
+                                            totalBankTransactionAmount,
+                                            totalReconciliationAmount
+                                            ) VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setObject(1, reconciliation.getMatchID());
         preparedStatement.setObject(2, reconciliation.getReconciliationDate());
+        preparedStatement.setObject(3, reconciliation.getBankTransactionDate());
+        preparedStatement.setObject(4, reconciliation.getTotalSaleTransactionAmount());
+        preparedStatement.setObject(5, reconciliation.getTotalBankTransactionAmount());
+        preparedStatement.setObject(6, reconciliation.getTotalReconciliationAmount());
 
         preparedStatement.executeUpdate();
     }
@@ -52,35 +60,11 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
 
         PreparedStatement preparedStatement = connection.prepareStatement(pendingSalesQuery);
 
-        List<SaleTransaction> saleTransactions = new ArrayList<>();
+        List<SaleTransaction> saleTransactions;
 
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                String saleId = resultSet.getString("saleId");
-                BigDecimal grossAmount = resultSet.getBigDecimal("grossAmount");
-                LocalDateTime date = resultSet.getTimestamp("date").toLocalDateTime();
-                String paymentMethod = resultSet.getString("paymentMethod");
-                Integer installments = resultSet.getInt("installments");
-                String status = resultSet.getString("status");
-                String matchID = resultSet.getString("matchID");
-                BigDecimal netAmount = resultSet.getBigDecimal("netAmount");
-                LocalDateTime receivedAt = resultSet.getTimestamp("receivedAt").toLocalDateTime();
-
-                SaleTransaction saleTransaction = new SaleTransaction(
-                        saleId,
-                        grossAmount,
-                        date,
-                        paymentMethod,
-                        installments,
-                        status,
-                        matchID,
-                        netAmount,
-                        receivedAt
-                );
-                saleTransactions.add(saleTransaction);
+            saleTransactions = convertResultSetToSaleTransactions(resultSet);
             }
-        }
 
         return saleTransactions;
     }
@@ -134,7 +118,11 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
 
             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
             updateStatement.setObject(1, matchID);
-            updateStatement.setObject(1, saleId);
+            updateStatement.setObject(2, saleId);
+
+            updateStatement.executeUpdate();
+
+            System.out.println("Status updated for saleId: " + saleId + " and matchID: " + matchID);
         }
 
         for (BankTransaction bankTransaction : bankTransactions) {
@@ -142,12 +130,16 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
 
             String updateQuery = """
                     UPDATE bank_transactions
-                    SET status = 'RECONCILED' 
+                    SET status = 'RECONCILED' ,
+                        matchID = ?
                     WHERE bankTransactionId = ?
                     """;
 
             PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
-            updateStatement.setObject(1, transactionId);
+            updateStatement.setObject(1, matchID);
+            updateStatement.setObject(2, transactionId);
+
+            updateStatement.executeUpdate();
 
         }
     }
@@ -158,12 +150,14 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
         String reconciliationsQuery = """
                 SELECT *
                 FROM sale_transactions
-                WHERE date = ?
+                WHERE receivedAt = ?
                 AND status = 'RECONCILED'
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(reconciliationsQuery);
         preparedStatement.setObject(1, reconciliationDate);
+
+        System.out.println("Retrieving reconciled sales for date: " + reconciliationDate);
 
         try (ResultSet reconciliationsSet = preparedStatement.executeQuery()) {
             return convertResultSetToSaleTransactions(reconciliationsSet);
@@ -182,9 +176,10 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             String paymentMethod = resultSet.getString("paymentMethod");
             Integer installments = resultSet.getInt("installments");
             String status = resultSet.getString("status");
-            String bankTransactionId = resultSet.getString("bankTransactionId");
+            String matchID = resultSet.getString("matchID");
             BigDecimal netAmount = resultSet.getBigDecimal("netAmount");
             LocalDateTime receivedAt = resultSet.getTimestamp("receivedAt").toLocalDateTime();
+            String clientName = resultSet.getString("clientName");
 
 
             SaleTransaction saleTransaction = new SaleTransaction(
@@ -194,9 +189,10 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
                     paymentMethod,
                     installments,
                     status,
-                    bankTransactionId,
+                    matchID,
                     netAmount,
-                    receivedAt
+                    receivedAt,
+                    clientName
             );
             saleTransactions.add(saleTransaction);
         }

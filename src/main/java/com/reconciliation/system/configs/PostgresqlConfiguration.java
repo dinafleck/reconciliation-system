@@ -38,6 +38,18 @@ public class PostgresqlConfiguration {
                     """;
             connection.createStatement().executeUpdate(createReportQuery);
 
+            String createReconciliationQuery = """
+                    CREATE TABLE reconciliations (
+                    matchID UUID PRIMARY KEY NOT NULL,
+                    reconciliationDate TIMESTAMP NOT NULL,
+                    bankTransactionDate TIMESTAMP NOT NULL,
+                    totalSaleTransactionAmount DECIMAL(10,2) NOT NULL,
+                    totalBankTransactionAmount DECIMAL(10,2) NOT NULL,
+                    totalReconciliationAmount DECIMAL(10,2) NOT NULL
+                    )
+                    """;
+            connection.createStatement().executeUpdate(createReconciliationQuery);
+
             String createBankTransactionQuery = """
                     CREATE TABLE bank_transactions (
                         bankTransactionId VARCHAR(255) PRIMARY KEY NOT NULL,
@@ -45,18 +57,12 @@ public class PostgresqlConfiguration {
                         amount DECIMAL(10,2) NOT NULL,
                         description VARCHAR(255) NOT NULL,
                         direction VARCHAR(255) NOT NULL,
-                        status VARCHAR(255) NOT NULL
+                        status VARCHAR(255) NOT NULL,
+                        matchID UUID,
+                        FOREIGN KEY (matchID) REFERENCES reconciliations(matchID)
                     )
                     """;
             connection.createStatement().executeUpdate(createBankTransactionQuery);
-
-            String createReconciliationQuery = """
-                    CREATE TABLE reconciliations (
-                    matchID UUID PRIMARY KEY NOT NULL,
-                    reconciliationDate TIMESTAMP NOT NULL
-                    )
-                    """;
-            connection.createStatement().executeUpdate(createReconciliationQuery);
 
             String createTransactionQuery = """
                     CREATE TABLE sale_transactions (
@@ -70,6 +76,7 @@ public class PostgresqlConfiguration {
                         matchID UUID,
                         netAmount DECIMAL(10,2) NOT NULL,
                         receivedAt TIMESTAMP NOT NULL,
+                        clientName VARCHAR(255) NOT NULL,
                         FOREIGN KEY (matchID) REFERENCES reconciliations(matchID)
                     )
                     """;

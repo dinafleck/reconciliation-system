@@ -89,17 +89,19 @@ public class ReconciliationBusinessService implements ReconciliationService {
             }
 
             reconciliation.addAllBankTransaction(bankTransactionsForDate);
+            reconciliation.setBankTransactionDate(date);
 
             List<SaleTransaction> saleTransactionsForDate = retrieveSaleTransactionByDate(date, saleTransactions);
 
             reconciliation.addAllSaleTransaction(saleTransactionsForDate);
 
-            reconciliationRepository.updateReconciliationStatus(saleTransactionsForDate, bankTransactionsForDate, reconciliation.getMatchID());
-
             reconciliations.add(reconciliation);
             reconciliation.save(reconciliationRepository);
+
+            reconciliationRepository.updateReconciliationStatus(saleTransactionsForDate, bankTransactionsForDate, reconciliation.getMatchID());
         }
 
+        generateFile(reconciliations);
         return reconciliations;
     }
 
@@ -109,4 +111,51 @@ public class ReconciliationBusinessService implements ReconciliationService {
                 .filter(it -> it.getReceivedAt().toLocalDate().equals(date))
                 .toList();
     }
+
+    private void generateFile(List<Reconciliation> reconciliations) {
+        String csvFile = "reconciliation_report.csv";
+
+
+        try (java.io.FileWriter fileWriter = new java.io.FileWriter(csvFile)) {
+            String header = "MatchID," +
+                    "Total Recebido," +
+                    "Total Vendas," +
+                    "Diferenca conciliacao," +
+                    "Data Recebimento," +
+                    "SaleID," +
+                    "Data Venda," +
+                    "Nome Cliente," +
+                    "Metodo Pagamento," +
+                    "Valor Total," +
+                    "Valor Liquido\n";
+
+            fileWriter.append(header);
+
+            for (Reconciliation reconciliation : reconciliations) {
+                for (BankTransaction bankTransaction : reconciliation.getBankTransactions()) {
+                    for (SaleTransaction saleTransaction : reconciliation.getSaleTransactions()){
+                        fileWriter.append(reconciliation.getMatchID().toString()).append(",");
+                        fileWriter.append(reconciliation.getTotalBankTransactionAmount().toString()).append(",");
+                        fileWriter.append(reconciliation.getTotalSaleTransactionAmount().toString()).append(",");
+                        fileWriter.append(reconciliation.getTotalReconciliationAmount().toString()).append(",");
+                        fileWriter.append(bankTransaction.getPostDate().toString()).append(",");
+                        fileWriter.append(saleTransaction.getSaleId()).append(",");
+                        fileWriter.append(saleTransaction.getReceivedAt().toString()).append(",");
+                        fileWriter.append(saleTransaction.getClientName()).append(",");
+                        fileWriter.append(saleTransaction.getPaymentMethod()).append(",");
+                        fileWriter.append(saleTransaction.getGrossAmount().toString()).append(",");
+                        fileWriter.append(saleTransaction.getNetAmount().toString()).append("\n");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("file updated");
+
+    }
+
+
 }

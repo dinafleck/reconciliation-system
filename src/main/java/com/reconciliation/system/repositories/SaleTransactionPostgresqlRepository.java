@@ -30,8 +30,9 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
                                           installments,
                                           status,
                                           netAmount,
-                                          receivedAt
-                                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                          receivedAt,
+                                          clientName
+                                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -44,6 +45,7 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
         preparedStatement.setObject(7, saleTransaction.getStatus());
         preparedStatement.setObject(8, saleTransaction.getNetAmount());
         preparedStatement.setObject(9, saleTransaction.getReceivedAt());
+        preparedStatement.setObject(10, saleTransaction.getClientName());
 
         preparedStatement.executeUpdate();
     }
