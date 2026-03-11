@@ -7,3 +7,7 @@ app:
     username: reconciliation-system
     password:
     driver-class: org.h2.Driver
+
+  external:
+    api:
+      base-url:

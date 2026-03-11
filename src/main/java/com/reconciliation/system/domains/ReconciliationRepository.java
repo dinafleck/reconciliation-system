@@ -18,5 +18,8 @@ public interface ReconciliationRepository {
 
     void updateReconciliationStatus(List<SaleTransaction> saleTransactions, List<BankTransaction> bankTransactions, UUID matchID) throws SQLException;
 
+    void updateWriteOffStatus(String saleId) throws SQLException;
+
     List<SaleTransaction> getReconciledSales(LocalDate reconciliationDate) throws SQLException;
+    List<SaleTransaction> getOpenSales() throws SQLException;
 }

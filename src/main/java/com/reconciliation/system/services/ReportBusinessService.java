@@ -54,11 +54,15 @@ public class ReportBusinessService implements ReportService {
             Report report = new Report();
 
             for (String line : lines) {
-                if (line == null || line.isEmpty()) {
+                if (line == null || line.isEmpty() || line.startsWith("Data")) {
                     continue;
                 }
 
                 line = removeBOM(line);
+
+                if (line.startsWith("Data")) {
+                    continue;
+                }
 
                 String[] lineParts = line.split(SEPARATOR);
 
@@ -70,8 +74,9 @@ public class ReportBusinessService implements ReportService {
                         lineParts[14].trim(),
                         Integer.parseInt(lineParts[23].trim()),
                         parseDecimal(lineParts[39]),
-                        LocalDateTime.parse(lineParts[27].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        lineParts[3].trim()
+                        LocalDateTime.parse(lineParts[27].trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                        lineParts[3].trim(),
+                        lineParts[4].trim().replaceAll("[.\\-\\s]", "")
                 );
 
                 report.addSalesTransaction(saleTransaction);
@@ -113,11 +118,15 @@ public class ReportBusinessService implements ReportService {
 
                 line = removeBOM(line);
 
+                if (line.contains("Data")) {
+                    continue;
+                }
+
                 String[] lineParts = line.split(SEPARATOR);
 
                 BankTransaction bankTransaction = new BankTransaction(
                         lineParts[9],
-                        LocalDateTime.parse(lineParts[0].trim() + " 00:00:00"
+                        LocalDateTime.parse(lineParts[0].replace("\"", "").trim() + " 00:00:00"
                                 , DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
                         parseDecimal(lineParts[6]),
                         lineParts[4],

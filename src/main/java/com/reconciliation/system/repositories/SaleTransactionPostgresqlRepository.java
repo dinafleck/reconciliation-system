@@ -15,7 +15,6 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
 
     public SaleTransactionPostgresqlRepository(Connection connection) {
         this.connection = connection;
-
     }
 
     @Override
@@ -31,8 +30,10 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
                                           status,
                                           netAmount,
                                           receivedAt,
-                                          clientName
-                                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                          clientName,
+                                          cpf,
+                                          writeOffStatus
+                                          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -42,10 +43,12 @@ public class SaleTransactionPostgresqlRepository implements SaleTransactionRepos
         preparedStatement.setObject(4, saleTransaction.getOrderDate());
         preparedStatement.setObject(5, saleTransaction.getPaymentMethod());
         preparedStatement.setObject(6, saleTransaction.getInstallments());
-        preparedStatement.setObject(7, saleTransaction.getStatus());
+        preparedStatement.setObject(7, saleTransaction.getReconciliationStatus());
         preparedStatement.setObject(8, saleTransaction.getNetAmount());
         preparedStatement.setObject(9, saleTransaction.getReceivedAt());
         preparedStatement.setObject(10, saleTransaction.getClientName());
+        preparedStatement.setObject(11, saleTransaction.getCpf());
+        preparedStatement.setObject(12, saleTransaction.getWriteOffStatus());
 
         preparedStatement.executeUpdate();
     }

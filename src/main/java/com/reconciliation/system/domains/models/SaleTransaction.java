@@ -9,11 +9,13 @@ public class SaleTransaction {
     private final LocalDateTime orderDate;
     private final String paymentMethod;
     private final Integer installments;
-    private final String status;
+    private final String reconciliationStatus;
     private final String matchID;
     private final BigDecimal netAmount;
     private LocalDateTime receivedAt;
     private final String clientName;
+    private final String cpf;
+    private final String writeOffStatus;
 
     public SaleTransaction(
             String saleId,
@@ -23,18 +25,21 @@ public class SaleTransaction {
             Integer installments,
             BigDecimal netAmount,
             LocalDateTime receivedAt,
-            String clientName
+            String clientName,
+            String cpf
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
         this.orderDate = orderDate;
         this.paymentMethod = paymentMethod;
         this.installments = installments;
-        this.status = "PENDING";
+        this.reconciliationStatus = "PENDING";
         this.matchID = null;
         this.netAmount = netAmount;
         this.receivedAt = receivedAt;
         this.clientName = clientName;
+        this.cpf = cpf;
+        this.writeOffStatus = "OPEN";
     }
 
     public SaleTransaction(
@@ -43,22 +48,26 @@ public class SaleTransaction {
             LocalDateTime orderDate,
             String paymentMethod,
             Integer installments,
-            String status,
+            String reconciliationStatus,
             String matchID,
             BigDecimal netAmount,
             LocalDateTime receivedAt,
-            String clientName
+            String clientName,
+            String cpf,
+            String writeOffStatus
     ) {
         this.saleId = saleId;
         this.grossAmount = grossAmount;
         this.orderDate = orderDate;
         this.paymentMethod = paymentMethod;
         this.installments = installments;
-        this.status = status;
+        this.reconciliationStatus = reconciliationStatus;
         this.matchID = matchID;
         this.netAmount = netAmount;
         this.receivedAt = receivedAt;
         this.clientName = clientName;
+        this.cpf = cpf;
+        this.writeOffStatus = writeOffStatus;
     }
 
 
@@ -82,8 +91,8 @@ public class SaleTransaction {
         return installments;
     }
 
-    public String getStatus() {
-        return status;
+    public String getReconciliationStatus() {
+        return reconciliationStatus;
     }
 
     public String getMatchID() {
@@ -106,5 +115,12 @@ public class SaleTransaction {
         return clientName;
     }
 
+    public String getCpf() {
+        return cpf;
+    }
+
+    public String getWriteOffStatus() {
+        return writeOffStatus;
+    }
 
 }

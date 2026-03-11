@@ -1,4 +1,4 @@
-package com.reconciliation.system.configs;
+package com.reconciliation.system.infrastructure.configs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -77,6 +77,8 @@ public class PostgresqlConfiguration {
                         netAmount DECIMAL(10,2) NOT NULL,
                         receivedAt TIMESTAMP NOT NULL,
                         clientName VARCHAR(255) NOT NULL,
+                        cpf VARCHAR(255) NOT NULL,
+                        writeOffStatus VARCHAR(255),
                         FOREIGN KEY (matchID) REFERENCES reconciliations(matchID)
                     )
                     """;

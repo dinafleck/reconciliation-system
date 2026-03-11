@@ -17,7 +17,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.9")
     implementation("org.springframework:spring-jdbc:7.0.3")
     implementation("com.h2database:h2:2.4.240")
-    implementation("org.springframework.boot:spring-boot-starter-web:4.0.3")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

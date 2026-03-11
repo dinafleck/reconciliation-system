@@ -121,8 +121,6 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             updateStatement.setObject(2, saleId);
 
             updateStatement.executeUpdate();
-
-            System.out.println("Status updated for saleId: " + saleId + " and matchID: " + matchID);
         }
 
         for (BankTransaction bankTransaction : bankTransactions) {
@@ -145,6 +143,20 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
     }
 
     @Override
+    public void updateWriteOffStatus(String saleId) throws SQLException {
+        String updateQuery = """
+                    UPDATE sale_transactions
+                    SET writeOffStatus = 'CLOSED',
+                    WHERE saleId = ?
+                    """;
+
+        PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+        updateStatement.setObject(1, saleId);
+
+        updateStatement.executeUpdate();
+    }
+
+    @Override
     public List<SaleTransaction> getReconciledSales(LocalDate reconciliationDate) throws SQLException {
 
         String reconciliationsQuery = """
@@ -157,14 +169,30 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
         PreparedStatement preparedStatement = connection.prepareStatement(reconciliationsQuery);
         preparedStatement.setObject(1, reconciliationDate);
 
-        System.out.println("Retrieving reconciled sales for date: " + reconciliationDate);
-
         try (ResultSet reconciliationsSet = preparedStatement.executeQuery()) {
             return convertResultSetToSaleTransactions(reconciliationsSet);
         } catch (SQLException e) {
             throw new SQLException("Error while retrieving reconciled sales", e);
         }
 
+    }
+
+    public List<SaleTransaction> getOpenSales() throws SQLException {
+
+        String pendingSalesQuery = """
+                    SELECT *
+                    FROM sale_transactions
+                    WHERE writeOffStatus = 'OPEN'
+                """;
+
+        PreparedStatement preparedStatement = connection.prepareStatement(pendingSalesQuery);
+
+        List<SaleTransaction> saleTransactions;
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            saleTransactions = convertResultSetToSaleTransactions(resultSet);
+        }
+        return saleTransactions;
     }
 
     private List<SaleTransaction> convertResultSetToSaleTransactions(ResultSet resultSet) throws SQLException {
@@ -180,6 +208,8 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
             BigDecimal netAmount = resultSet.getBigDecimal("netAmount");
             LocalDateTime receivedAt = resultSet.getTimestamp("receivedAt").toLocalDateTime();
             String clientName = resultSet.getString("clientName");
+            String cpf = resultSet.getString("cpf");
+            String writeOffStatus = resultSet.getString("writeOffStatus");
 
 
             SaleTransaction saleTransaction = new SaleTransaction(
@@ -192,7 +222,9 @@ public class ReconciliationPostgresqlRepository implements ReconciliationReposit
                     matchID,
                     netAmount,
                     receivedAt,
-                    clientName
+                    clientName,
+                    cpf,
+                    writeOffStatus
             );
             saleTransactions.add(saleTransaction);
         }

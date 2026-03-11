@@ -5,22 +5,24 @@ import com.reconciliation.system.domains.ReconciliationService;
 import com.reconciliation.system.domains.models.BankTransaction;
 import com.reconciliation.system.domains.models.Reconciliation;
 import com.reconciliation.system.domains.models.SaleTransaction;
+import com.reconciliation.system.infrastructure.clients.ExternalHttpClient;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 public class ReconciliationBusinessService implements ReconciliationService {
     private final ReconciliationRepository reconciliationRepository;
+    private final ExternalHttpClient externalHttpClient;
 
-    public ReconciliationBusinessService(ReconciliationRepository reconciliationRepository) {
+    public ReconciliationBusinessService(ReconciliationRepository reconciliationRepository, ExternalHttpClient externalHttpClient) {
         this.reconciliationRepository = reconciliationRepository;
+        this.externalHttpClient = externalHttpClient;
     }
 
     private static void swapSaleTransactionForNextDay(LocalDate date, List<SaleTransaction> saleTransactions) {
@@ -105,6 +107,12 @@ public class ReconciliationBusinessService implements ReconciliationService {
         return reconciliations;
     }
 
+    @Override
+    public void writeOff () throws SQLException, IOException, InterruptedException {
+        List<SaleTransaction> saleTransactions = reconciliationRepository.getOpenSales();
+        processWriteOff(saleTransactions);
+    }
+
     private static List<SaleTransaction> retrieveSaleTransactionByDate(LocalDate date, List<SaleTransaction> saleTransactions) {
         return saleTransactions
                 .stream()
@@ -116,7 +124,7 @@ public class ReconciliationBusinessService implements ReconciliationService {
         String csvFile = "reconciliation_report.csv";
 
 
-        try (java.io.FileWriter fileWriter = new java.io.FileWriter(csvFile)) {
+        try (FileWriter fileWriter = new FileWriter(csvFile)) {
             String header = "MatchID," +
                     "Total Recebido," +
                     "Total Vendas," +
@@ -154,8 +162,31 @@ public class ReconciliationBusinessService implements ReconciliationService {
         }
 
         System.out.println("file updated");
-
     }
 
+    public void processWriteOff(List<SaleTransaction> saleTransactions) throws IOException, InterruptedException, SQLException {
+        for (SaleTransaction sale : saleTransactions) {
+            Map<String, Object> writeOffData = prepareWriteOffData(sale);
+
+            externalHttpClient.post("api/contas/receber/baixar", writeOffData);
+
+            reconciliationRepository.updateWriteOffStatus(sale.getSaleId());
+
+            System.out.println(sale.getSaleId() + "closed.");
+        }
+    }
+
+    public Map<String, Object> prepareWriteOffData(SaleTransaction sale){
+        Map<String,Object> body = new HashMap<>();
+
+        body.put("cpf", sale.getCpf());
+        body.put("data", sale.getReceivedAt().toLocalDate().toString());
+        body.put("valor", sale.getGrossAmount());
+        body.put("id_pedido", sale.getSaleId());
+        body.put("metodo_pagamento", sale.getPaymentMethod());
+
+        return body;
+
+    }
 
 }
